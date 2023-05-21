@@ -1,5 +1,6 @@
 package com.buy.services;
 
+import com.buy.configs.InventoryServiceClient;
 import com.buy.configs.ProductServiceClient;
 import com.buy.dtos.OrderDTO;
 import com.buy.dtos.OrderResponse;
@@ -21,6 +22,7 @@ public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
     private final ModelMapper orderMapper;
     private final ProductServiceClient productServiceClient;
+    private final InventoryServiceClient inventoryServiceClient;
 
     @Override
     public List<OrderResponse> getAllOrders() {
@@ -55,17 +57,21 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public OrderDTO saveOrder(OrderDTO orderDTO) {
-
-        List<Order> orders = orderRepository.findAll().stream().toList();
         Order order = orderMapper.map(orderDTO, Order.class);
-        boolean check = orders.contains(order);
-        if (check) {
-            throw new ApiRequestException("Order with Id " + orderDTO.getId() + " already exists");
-        }
-        System.out.println(getProductDetails(orderDTO));
-        order.setProductId(getProductDetails(orderDTO).getId());
+        ProductDTO productDTO = orderMapper.map(inventoryServiceClient.getInventory(orderDTO.getProductId()), ProductDTO.class);
 
-        orderRepository.save(order);
+        boolean orderExists = orderRepository.findAll().stream().anyMatch(each -> each.getId().equals(order.getId()));
+        if (orderExists) {
+            throw new ApiRequestException("Order with Id " + orderDTO.getId() + " already exists");
+        } else if (productDTO != null && productDTO.getQuantity() > 0 && (productDTO.getQuantity() >= order.getQuantity())) {
+//            Order createOrder = new Order();
+            order.setProductId(productDTO.getId());
+            order.setQuantity(orderDTO.getQuantity());
+            order.setCustomerName(orderDTO.getCustomerName());
+            orderRepository.save(order);
+        } else {
+            throw new ApiRequestException("Not enough quantity to place order");
+        }
         return orderMapper.map(order, OrderDTO.class);
     }
 
@@ -88,8 +94,8 @@ public class OrderServiceImpl implements OrderService {
     }
 
     private ProductDTO getProductDetails(OrderDTO orderDTO) {
-        ProductDTO receivedProduct = productServiceClient.getProduct(orderDTO.getProductId()).getBody();
-        return receivedProduct;
+        return productServiceClient.getProduct(orderDTO.getProductId()).getBody();
     }
+
 
 }
