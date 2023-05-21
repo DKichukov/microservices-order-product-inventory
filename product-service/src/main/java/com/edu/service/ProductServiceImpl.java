@@ -1,7 +1,7 @@
 package com.edu.service;
 
 import com.edu.dto.ProductDTO;
-import com.edu.exceptions.ProductNotFoundException;
+import com.edu.exceptions.ApiRequestException;
 import com.edu.model.Product;
 import com.edu.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +31,7 @@ public class ProductServiceImpl implements ProductService {
     public ProductDTO getProduct(Integer productId) {
         Optional<Product> product = productRepository.findById(productId);
         if (product.isEmpty()) {
-            throw new ProductNotFoundException("Product not found for id " + productId);
+            throw new ApiRequestException("Product not found for id " + productId);
         }
         return prodMapper.map(product, ProductDTO.class);
     }
@@ -41,7 +41,7 @@ public class ProductServiceImpl implements ProductService {
         Product existingProduct = productRepository.findByName(productDTO.getName());
 
         if (existingProduct != null) {
-            throw new ProductNotFoundException("Product with name " + productDTO.getName() + " already exists");
+            throw new ApiRequestException("Product with name " + productDTO.getName() + " already exists");
         }
         Product product = prodMapper.map(productDTO, Product.class);
 
@@ -51,7 +51,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public void updateProduct(Integer productId, ProductDTO productDTO) {
         Product product = productRepository.findById(productId)
-                .orElseThrow(RuntimeException::new);
+                .orElseThrow(()->new ApiRequestException("Product not found"));
         if (productDTO.getName() != null && !productDTO.getName().isEmpty()) {
             product.setName(productDTO.getName());
         }
@@ -70,7 +70,7 @@ public class ProductServiceImpl implements ProductService {
         Optional<Product> product = productRepository.findById(productId);
 
         if (product.isEmpty()) {
-            throw new ProductNotFoundException("Product not found for id " + productId);
+            throw new ApiRequestException("Product not found for id " + productId);
         }
         productRepository.delete(prodMapper.map(product, Product.class));
     }

@@ -1,7 +1,7 @@
 package com.buy.controller;
 
-import com.buy.config.ProductServiceClient;
-import com.buy.dto.ProductDTO;
+import com.buy.configs.ProductServiceClient;
+import com.buy.dtos.ProductDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

@@ -1,4 +1,4 @@
-package com.buy.config;
+package com.buy.configs;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;

@@ -1,10 +1,10 @@
 package com.buy.services;
 
-import com.buy.config.ProductServiceClient;
-import com.buy.dto.OrderDTO;
-import com.buy.dto.OrderResponse;
-import com.buy.dto.ProductDTO;
-import com.buy.exceptions.OrderNotFoundException;
+import com.buy.configs.ProductServiceClient;
+import com.buy.dtos.OrderDTO;
+import com.buy.dtos.OrderResponse;
+import com.buy.dtos.ProductDTO;
+import com.buy.exceptions.ApiRequestException;
 import com.buy.model.Order;
 import com.buy.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
@@ -33,14 +33,14 @@ public class OrderServiceImpl implements OrderService {
     public OrderResponse getOrder(Integer orderId) {
         Optional<Order> order = orderRepository.findById(orderId);
         if (order.isEmpty()) {
-            throw new OrderNotFoundException("Order not found for id " + orderId);
+            throw new ApiRequestException("Order not found for id " + orderId);
         }
         return getOrderResponse(orderMapper.map(order, OrderDTO.class));
     }
 
     @Override
     public void updateOrder(Integer orderId, OrderDTO orderDTO) {
-        Order order = orderRepository.findById(orderId).orElseThrow(OrderNotFoundException::new);
+        Order order = orderRepository.findById(orderId).orElseThrow(() -> new ApiRequestException("Order not found"));
         if (orderDTO.getProductId() != null) {
             order.setProductId(orderDTO.getProductId());
         }
@@ -60,7 +60,7 @@ public class OrderServiceImpl implements OrderService {
         Order order = orderMapper.map(orderDTO, Order.class);
         boolean check = orders.contains(order);
         if (check) {
-            throw new OrderNotFoundException("Order with Id " + orderDTO.getId() + " already exists");
+            throw new ApiRequestException("Order with Id " + orderDTO.getId() + " already exists");
         }
         System.out.println(getProductDetails(orderDTO));
         order.setProductId(getProductDetails(orderDTO).getId());
@@ -74,7 +74,7 @@ public class OrderServiceImpl implements OrderService {
         Optional<Order> order = orderRepository.findById(orderId);
 
         if (order.isEmpty()) {
-            throw new OrderNotFoundException("Order not found for id " + orderId);
+            throw new ApiRequestException("Order not found for id " + orderId);
         }
         orderRepository.delete(orderMapper.map(order, Order.class));
     }

@@ -1,4 +1,4 @@
-package com.buy.dto;
+package com.buy.dtos;
 
 import lombok.Data;
 import lombok.RequiredArgsConstructor;

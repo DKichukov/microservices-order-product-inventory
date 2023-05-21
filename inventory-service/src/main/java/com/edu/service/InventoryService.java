@@ -6,4 +6,6 @@ import java.util.List;
 
 public interface InventoryService {
     List<InventoryResponse> getAllProducts();
+
+    InventoryResponse getProductById(Integer productId);
 }

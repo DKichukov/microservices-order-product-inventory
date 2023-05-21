@@ -1,7 +1,7 @@
 package com.buy.services;
 
-import com.buy.dto.OrderDTO;
-import com.buy.dto.OrderResponse;
+import com.buy.dtos.OrderDTO;
+import com.buy.dtos.OrderResponse;
 
 import java.util.List;
 

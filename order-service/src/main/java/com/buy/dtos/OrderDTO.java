@@ -1,17 +1,21 @@
-package com.buy.dto;
+package com.buy.dtos;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.persistence.Column;
+import javax.validation.constraints.Min;
+
 @Data
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class OrderResponse {
+public class OrderDTO {
     private Integer id;
-    private String productName;
+    @Min(1)
+    private Integer productId;
+    @Min(1)
     private Integer quantity;
+    @Column(length = 64, nullable = false)
     private String customerName;
 }
