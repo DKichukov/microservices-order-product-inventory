@@ -1,15 +1,13 @@
-package com.edu.dto;
+package com.edu.dtos;
 
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
 
-import javax.persistence.*;
+import javax.persistence.Column;
 
 @Data
-@Entity
-@Table(name = "products")
+@RequiredArgsConstructor
 public class ProductDTO {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @Column(length = 64, nullable = false)
     private String name;

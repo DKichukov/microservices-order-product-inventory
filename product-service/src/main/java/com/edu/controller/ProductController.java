@@ -1,5 +1,6 @@
 package com.edu.controller;
 
+
 import com.edu.dto.ProductDTO;
 import com.edu.service.ProductService;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +17,7 @@ import java.util.List;
 public class ProductController {
     private final ProductService productService;
 
-    @GetMapping("/")
+    @GetMapping
     public ResponseEntity<List<ProductDTO>> getProducts() {
         List<ProductDTO> products = productService.getAllProducts();
         return ResponseEntity.ok(products);
@@ -28,18 +29,19 @@ public class ProductController {
         return ResponseEntity.ok(productDTO);
     }
 
-    @PostMapping("/")
+    @PostMapping
     public ResponseEntity<ProductDTO> createProduct(@Valid @RequestBody ProductDTO productDTO) {
         ProductDTO createdProduct = productService.saveProduct(productDTO);
         return new ResponseEntity<>(createdProduct, HttpStatus.CREATED);
     }
 
-        @PutMapping(path = "{productId}")
+    @PutMapping(path = "{productId}")
     public ResponseEntity<String> updateProduct(@PathVariable("productId") Integer id,
                                                 @Valid @RequestBody ProductDTO productDTO) {
-        productService.updateProduct(id,productDTO);
+        productService.updateProduct(id, productDTO);
         return new ResponseEntity<>("All changes are done", HttpStatus.OK);
     }
+
     @DeleteMapping(path = "{productId}")
     public ResponseEntity<String> deleteProduct(@PathVariable("productId") Integer id) {
         productService.delete(id);

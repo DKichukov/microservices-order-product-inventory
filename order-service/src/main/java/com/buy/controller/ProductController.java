@@ -1,28 +1,30 @@
 package com.buy.controller;
 
+import com.buy.config.ProductServiceClient;
 import com.buy.dto.ProductDTO;
-import com.buy.config.ProductProxyServer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import javax.validation.Valid;
 import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1/products")
 public class ProductController {
-    private final ProductProxyServer productProxyServer;
+    private final ProductServiceClient productServiceClient;
 
-    @GetMapping("/")
+    @GetMapping
     public ResponseEntity<List<ProductDTO>> getAllProducts() {
-        return ResponseEntity.ok(productProxyServer.getAllProducts());
+        return ResponseEntity.ok(productServiceClient.getAllProducts());
     }
 
     @GetMapping(path = "{productId}")
     public ResponseEntity<ProductDTO> getProduct(@PathVariable("productId") Integer id) {
-        ProductDTO receivedProduct = productProxyServer.getProduct(id).getBody();
+        ProductDTO receivedProduct = productServiceClient.getProduct(id).getBody();
         return ResponseEntity.ok(receivedProduct);
     }
 }

@@ -1,6 +1,6 @@
 package com.buy.services;
 
-import com.buy.config.ProductProxyServer;
+import com.buy.config.ProductServiceClient;
 import com.buy.dto.OrderDTO;
 import com.buy.dto.OrderResponse;
 import com.buy.dto.ProductDTO;
@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
     private final ModelMapper orderMapper;
-    private final ProductProxyServer productProxyServer;
+    private final ProductServiceClient productServiceClient;
 
     @Override
     public List<OrderResponse> getAllOrders() {
@@ -88,7 +88,8 @@ public class OrderServiceImpl implements OrderService {
     }
 
     private ProductDTO getProductDetails(OrderDTO orderDTO) {
-        ProductDTO receivedProduct = productProxyServer.getProduct(orderDTO.getProductId()).getBody();
+        ProductDTO receivedProduct = productServiceClient.getProduct(orderDTO.getProductId()).getBody();
         return receivedProduct;
     }
+
 }

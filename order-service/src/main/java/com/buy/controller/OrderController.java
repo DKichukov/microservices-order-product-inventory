@@ -1,13 +1,9 @@
 package com.buy.controller;
 
-import com.buy.config.ProductProxyServer;
 import com.buy.dto.OrderDTO;
 import com.buy.dto.OrderResponse;
-import com.buy.dto.ProductDTO;
-import com.buy.model.Order;
 import com.buy.services.OrderService;
 import lombok.RequiredArgsConstructor;
-import org.aspectj.weaver.ast.Or;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +20,7 @@ public class OrderController {
     private final OrderService orderService;
     private final ModelMapper orderMapper;
 
-    @GetMapping("/")
+    @GetMapping
     public ResponseEntity<List<OrderResponse>> getAllOrders() {
         List<OrderResponse> orders = orderService.getAllOrders();
         return ResponseEntity.ok(orders);
@@ -35,7 +31,7 @@ public class OrderController {
         OrderResponse order = orderService.getOrder(id);
         return ResponseEntity.ok(order);
     }
-    @PostMapping("/")
+    @PostMapping
      public ResponseEntity<OrderDTO> createOrder(@RequestBody OrderDTO orderDTO) {
         OrderDTO createdOrder = orderService.saveOrder(orderDTO);
         return new ResponseEntity<>(createdOrder, HttpStatus.CREATED);

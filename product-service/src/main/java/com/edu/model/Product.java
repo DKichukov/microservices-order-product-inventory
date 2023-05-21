@@ -16,4 +16,5 @@ public class Product {
     @Column(length = 500)
     private String description;
     private double price;
+    private int quantity;
 }
