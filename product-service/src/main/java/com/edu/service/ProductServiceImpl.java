@@ -29,11 +29,10 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductDTO getProduct(Integer productId) {
-        Optional<Product> product = productRepository.findById(productId);
-        if (product.isEmpty()) {
-            throw new ApiRequestException("Product not found for id " + productId);
-        }
-        return prodMapper.map(product, ProductDTO.class);
+        return prodMapper.map(
+                productRepository.findById(productId)
+                        .orElseThrow(() -> new ApiRequestException("Product not found for id " + productId)),
+                ProductDTO.class);
     }
 
     @Override
@@ -52,6 +51,7 @@ public class ProductServiceImpl implements ProductService {
     public void updateProduct(Integer productId, ProductDTO productDTO) {
         Product product = productRepository.findById(productId)
                 .orElseThrow(()->new ApiRequestException("Product not found"));
+
         if (productDTO.getName() != null && !productDTO.getName().isEmpty()) {
             product.setName(productDTO.getName());
         }
@@ -60,6 +60,12 @@ public class ProductServiceImpl implements ProductService {
         }
         if (productDTO.getDescription() != null && !productDTO.getDescription().isEmpty()) {
             product.setDescription(productDTO.getDescription());
+        }
+        if (productDTO.getQuantity() > 0) {
+            product.setQuantity(productDTO.getQuantity());
+        } else {
+            productRepository.delete(product);
+            return;
         }
         productRepository.save(product);
     }

@@ -11,7 +11,7 @@ public interface OrderService {
 
     OrderResponse getOrder(Integer orderId);
 
-    OrderDTO saveOrder(OrderDTO orderDTO);
+    OrderDTO createOrder(OrderDTO orderDTO);
 
     void updateOrder(Integer orderId, OrderDTO orderDTO);
 

@@ -1,5 +1,6 @@
 package com.buy.exceptions;
 
+import feign.FeignException;
 import org.apache.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -16,7 +17,18 @@ public class ApiExceptionHandler {
         ApiException apiException = new ApiException(
                 e.getMessage(),
                 e,
-               HttpStatus.SC_BAD_REQUEST,
+                HttpStatus.SC_BAD_REQUEST,
+                ZonedDateTime.now(ZoneId.of("Z"))
+        );
+        return new ResponseEntity<>(apiException, BAD_REQUEST);
+    }
+
+    @ExceptionHandler(FeignException.BadRequest.class)
+    public ResponseEntity<Object> handleFeignBadRequest(FeignException.BadRequest e) {
+        ApiException apiException = new ApiException(
+                "Bad request in Feign client service",
+                e,
+                e.status(),
                 ZonedDateTime.now(ZoneId.of("Z"))
         );
         return new ResponseEntity<>(apiException, BAD_REQUEST);

@@ -3,6 +3,7 @@ package com.edu.model;
 import lombok.Data;
 
 import javax.persistence.*;
+import javax.validation.constraints.PositiveOrZero;
 
 @Data
 @Entity
@@ -15,6 +16,8 @@ public class Product {
     private String name;
     @Column(length = 500)
     private String description;
+    @PositiveOrZero
     private double price;
+    @PositiveOrZero
     private int quantity;
 }
