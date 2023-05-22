@@ -13,7 +13,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -26,18 +25,17 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public List<OrderResponse> getAllOrders() {
-        List<Order> orders = orderRepository.findAll();
-        return orders.stream().map(prd -> getOrderResponse(orderMapper.map(prd, OrderDTO.class)))
+        return orderRepository.findAll().stream()
+                .map(prd -> getOrderResponse(orderMapper.map(prd, OrderDTO.class)))
                 .collect(Collectors.toList());
     }
 
     @Override
     public OrderResponse getOrder(Integer orderId) {
-        Optional<Order> order = orderRepository.findById(orderId);
-        if (order.isEmpty()) {
-            throw new ApiRequestException("Order not found for id " + orderId);
-        }
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new ApiRequestException("Order not found for " + "id " + orderId));
         return getOrderResponse(orderMapper.map(order, OrderDTO.class));
+
     }
 
     @Override
@@ -87,11 +85,9 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public void deleteOrder(Integer orderId) {
-        Optional<Order> order = orderRepository.findById(orderId);
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new ApiRequestException("Order not found for id " + orderId));
 
-        if (order.isEmpty()) {
-            throw new ApiRequestException("Order not found for id " + orderId);
-        }
         orderRepository.delete(orderMapper.map(order, Order.class));
     }
     public OrderResponse getOrderResponse(OrderDTO orderDTO) {

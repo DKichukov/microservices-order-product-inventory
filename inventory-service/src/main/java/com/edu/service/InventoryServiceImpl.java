@@ -16,7 +16,8 @@ public class InventoryServiceImpl implements InventoryService {
 
     @Override
     public List<InventoryResponse> getAllProducts() {
-        return getProductToInventoryResponse(productServiceClient.getAllProducts().stream().toList());
+        return getProductToInventoryResponse(productServiceClient.getAllProducts()
+                .stream().toList());
     }
 
     @Override

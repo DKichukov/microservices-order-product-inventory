@@ -9,7 +9,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -73,11 +72,8 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public void delete(Integer productId) {
-        Optional<Product> product = productRepository.findById(productId);
+        Product product = productRepository.findById(productId).orElseThrow(()->new ApiRequestException("Product not found for id " + productId));
 
-        if (product.isEmpty()) {
-            throw new ApiRequestException("Product not found for id " + productId);
-        }
         productRepository.delete(prodMapper.map(product, Product.class));
     }
 }
