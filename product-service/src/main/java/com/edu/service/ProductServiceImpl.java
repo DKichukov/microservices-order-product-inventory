@@ -9,7 +9,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -23,7 +22,7 @@ public class ProductServiceImpl implements ProductService {
         return products
                 .stream()
                 .map(prd -> prodMapper.map(prd, ProductDTO.class))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
