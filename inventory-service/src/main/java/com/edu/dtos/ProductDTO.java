@@ -1,12 +1,16 @@
 package com.edu.dtos;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.Column;
 
 @Data
-@RequiredArgsConstructor
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class ProductDTO {
     private Integer id;
     @Column(length = 64, nullable = false)
