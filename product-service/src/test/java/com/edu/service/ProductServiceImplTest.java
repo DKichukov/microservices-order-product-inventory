@@ -98,7 +98,6 @@ class ProductServiceImplTest {
     }
     @Test
     void testUpdateProduct_QuantityIsZero_ShouldDeleteProduct() {
-        // Arrange
         Integer productId = 1;
         Product existingProduct = new Product();
         existingProduct.setId(productId);

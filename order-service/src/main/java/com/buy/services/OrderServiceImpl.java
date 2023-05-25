@@ -8,33 +8,46 @@ import com.buy.dtos.ProductDTO;
 import com.buy.exceptions.ApiRequestException;
 import com.buy.model.Order;
 import com.buy.repository.OrderRepository;
-import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
-@RequiredArgsConstructor
+
 @Service
 public class OrderServiceImpl implements OrderService {
-    private final OrderRepository orderRepository;
-    private final ModelMapper orderMapper;
-    private final ProductServiceClient productServiceClient;
-    private final InventoryServiceClient inventoryServiceClient;
+    @Autowired
+    private OrderRepository orderRepository;
+    @Autowired
+    private ModelMapper orderMapper;
+    @Autowired
+    private ProductServiceClient productServiceClient;
+    @Autowired
+    private InventoryServiceClient inventoryServiceClient;
+
 
     @Override
     public List<OrderResponse> getAllOrders() {
-        return orderRepository.findAll().stream()
-                .map(prd -> getOrderResponse(orderMapper.map(prd, OrderDTO.class)))
-                .collect(Collectors.toList());
+        return orderRepository.findAll().stream().map(orderDTO -> {
+            ProductDTO productDTOName = productServiceClient.getProduct(orderDTO.getProductId()).getBody();
+            OrderResponse newOrderResponse = new OrderResponse();
+            newOrderResponse.setId(orderDTO.getId());
+            assert productDTOName != null;
+            newOrderResponse.setProductName(productDTOName.getName());
+            newOrderResponse.setQuantity(orderDTO.getQuantity());
+            newOrderResponse.setCustomerName(orderDTO.getCustomerName());
+            return newOrderResponse;
+        }).toList();
     }
+
 
     @Override
     public OrderResponse getOrder(Integer orderId) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new ApiRequestException("Order not found for " + "id " + orderId));
-        return getOrderResponse(orderMapper.map(order, OrderDTO.class));
+        OrderDTO orderDTO = orderMapper.map(order, OrderDTO.class);
+        return orderMapper.map(orderDTO, OrderResponse.class);
 
     }
 
@@ -56,14 +69,17 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public OrderDTO createOrder(OrderDTO orderDTO) {
         Order order = orderMapper.map(orderDTO, Order.class);
+
         ProductDTO productDTO = orderMapper.map(inventoryServiceClient.getInventory(orderDTO.getProductId()), ProductDTO.class);
 
         boolean orderExists = orderRepository.findAll().stream().anyMatch(each -> each.getId().equals(order.getId()));
         if (orderExists) {
             throw new ApiRequestException("Order with Id " + orderDTO.getId() + " already exists");
+
         } else if (productDTO != null && productDTO.getQuantity() > 0 && (productDTO.getQuantity() >= order.getQuantity())) {
             updateProductInfoInOrder(orderDTO, order, productDTO);
             updateProductQuantity(order, productDTO);
+
         } else {
             throw new ApiRequestException("Not enough quantity to place order");
         }
@@ -89,18 +105,6 @@ public class OrderServiceImpl implements OrderService {
                 .orElseThrow(() -> new ApiRequestException("Order not found for id " + orderId));
 
         orderRepository.delete(orderMapper.map(order, Order.class));
-    }
-    public OrderResponse getOrderResponse(OrderDTO orderDTO) {
-        OrderResponse newOrderResponse = new OrderResponse();
-        newOrderResponse.setId(orderDTO.getId());
-        newOrderResponse.setProductName(getProductDetails(orderDTO).getName());
-        newOrderResponse.setQuantity(orderDTO.getQuantity());
-        newOrderResponse.setCustomerName(orderDTO.getCustomerName());
-        return newOrderResponse;
-    }
-
-    private ProductDTO getProductDetails(OrderDTO orderDTO) {
-        return productServiceClient.getProduct(orderDTO.getProductId()).getBody();
     }
 
 
