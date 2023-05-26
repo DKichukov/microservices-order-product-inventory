@@ -20,7 +20,7 @@ public interface ProductServiceClient
     @GetMapping(path = "{productId}")
     ResponseEntity<ProductDTO> getProduct(@PathVariable("productId") Integer productId);
     @PutMapping(path = "{productId}")
-    public ResponseEntity<String> updateProduct(@PathVariable("productId") Integer id,
+    ResponseEntity<String> updateProduct(@PathVariable("productId") Integer id,
                                                 @Valid @RequestBody ProductDTO productDTO);
 
 }

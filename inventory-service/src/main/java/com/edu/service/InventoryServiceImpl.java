@@ -29,7 +29,7 @@ public class InventoryServiceImpl implements InventoryService {
                 .orElseThrow(() -> new ApiRequestException("Product with id: " + productId + " not found"));
     }
 
-    public List<InventoryResponse> getProductToInventoryResponse(List<ProductDTO> productDTOList) {
+    List<InventoryResponse> getProductToInventoryResponse(List<ProductDTO> productDTOList) {
         return productDTOList.stream().map(
                 product -> {
                     InventoryResponse response = new InventoryResponse();
