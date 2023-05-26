@@ -80,11 +80,12 @@ class OrderControllerTest {
     }
     @Test
     public void testShouldUpdateOrder() throws Exception {
-        OrderDTO orderDTO = OrderDTO.builder().id(1).customerName(
+        OrderDTO orderDTO = OrderDTO.builder().id(1).quantity(2).customerName(
                 "ivan").build();
         mockMvc.perform(put("/api/v1/orders/{orderId}", 1)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(orderDTO)))
+
                 .andExpect(status().isOk())
                 .andExpect(content().string("All changes are done"));
         verify(orderService, times(1)).updateOrder(eq(1), eq(orderDTO));
